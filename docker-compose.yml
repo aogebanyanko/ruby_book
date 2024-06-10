@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  app:
+    build: .
+    tty: true
+    ports:
+      - 5999:5999
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0
+    ports:
+      - 7001:7001
+    volumes:
+      - ../ruby_study_db/mysql/init.d:/docker-entrypoint-initdb.d
+      - ../ruby_study_db/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: "Asia/Tokyo"
+    hostname: ${DB_HOSTNAME}
+    restart: always
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 81:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ../ruby_study_db/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - db
